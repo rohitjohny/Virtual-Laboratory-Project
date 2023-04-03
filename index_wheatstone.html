@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Virtual lab Wheatstone</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="text/javascript" src="index.js"></script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+  <script
+      src="https://code.jquery.com/jquery-3.5.1.min.js"
+      integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+      crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+          integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+          crossorigin="anonymous"></script>
+
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+          integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+          crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<!-- module for jsplumb -->
+  <script src="node_modules\jsplumb/dist/js/jsplumb.min.js"></script>
+  
+<!--module for jquery -->
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+          integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+   <!-- sweet alert -->
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.all.min.js"></script>  
+<!-- math -->
+<script async="true" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=AM_CHTML"> </script>
+</head>
+<style>
+  #diagram, #toolbox {
+    margin: 5px 0;
+    border-width: 2px;
+    border-style: solid;
+    border-color: rgb(17, 17, 17);
+    height: 90vh;
+    width : 90vh;
+    background-color: rgb(255, 255, 255);
+  }
+
+#toolbox {
+    display: flex;
+    padding: 5px;
+    flex-flow: row wrap;
+    align-content: flex-start;
+    width : 150vh;
+    background-color: rgb(109, 108, 106);
+}
+
+.control {
+    border-color: black;
+    border-radius: 10px;
+    border-width: 3px;
+    border-style: solid;
+    width: 60px;
+    text-align: center;
+    cursor: move;
+    height: fit-content;
+    height: -moz-max-content;
+    background-color: white;
+}
+
+#diagram .control {
+    position: relative;
+}
+
+.window {
+    z-index: 20;
+}
+
+.jtk-connector {
+    z-index: 4;
+}
+
+.jtk-endpoint {
+    z-index: 5;
+}
+
+.jtk-overlay {
+    z-index: 6;
+}
+
+.custom-menu {
+    z-index: 1000;
+    position: absolute;
+    background-color: #C0C0C0;
+    border: 1px solid black;
+    padding: 2px;
+}
+
+#toolbox .control {
+    margin: 5px 5px;
+}
+
+#instruction {
+  position: absolute;
+  left:1150px;
+  top:0px;
+}
+table, th, td {
+  border:1px solid black;
+  
+}
+#myTable{
+  border:1px solid black;
+
+  width: 300px;
+  height: 100%;
+}
+.button {
+  display: inline-block;
+  border-radius: 2px;
+  background-color: #f4511e;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  font-size: 15px;
+  width: 100px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.button:hover span {
+  padding-right: 25px;
+}
+
+.button:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+
+
+#instruction{
+  margin: 20px 0px;
+    height: 90vh;
+}
+
+#inst{
+height: 90vh;
+
+}
+
+
+
+.black_overlay {
+  display: none;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 1001;
+  -moz-opacity: 0.8;
+  opacity: .80;
+  filter: alpha(opacity=80);
+}
+.white_content {
+  display: none;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  border: 2px solid rgb(11, 11, 11);
+  background-color: white;
+  z-index: 1002;
+  overflow: auto;
+}
+
+
+
+table, th, td {
+  border:1px solid black;
+}
+#myTable{
+  border:1px solid black;
+  position: absolute;
+  top:40px;
+  left:0px;
+  width: 250px;
+  height: 10%;
+}
+</style>
+
+
+
+
+<body>
+<div class="container-fluid" style="border-width:2px,border-solid;border-color:rgb(9, 9, 9);">
+  <div >
+    <div class="col-md-3">
+      <div id="toolbox" >
+        <div class="control r" ondblclick="takeinput()"><img src="reostate.png" width="50px" height="50px"></div>
+        <div class="control v" ondblclick="takeinput()"><img src="battery.png" width="50px" height="50px"> </div>
+        <div class="control g" ondblclick="takeinput()"><img src="galvanometer.png" width="50px" height="50px"></div>
+        
+          <div id="diagram" style="height: 70vh;width :140vh; position: relative">
+            <div style="position:relative;">
+              <form action="#" onsubmit="balanced()"></form>
+                <label style="position:absolute;top:50px;left:50px;" >R1:</label>
+                <input style="position:absolute;top:80px;left:30px;width:60px;" type="number" id="R1"  required>
+              
+                <label style="position:absolute;top:150px;left:50px;" >R2:</label>
+                <input style="position:absolute;top:170px;left:30px;width:60px;" type="number" id="R2" required>
+              
+                <label style="position:absolute;top:50px;left:600px;width:40px;" >R3:</label>
+                <input style="position:absolute;top:80px;left:600px;width:200px;" type="range" min="1" max="10000" step="1" id="R3" oninput="this.nextElementSibling.value = this.value" value="1" required>
+                <input style="position:absolute;top:40px;left:650px;width:60px;" type="number" id="R3" required>
+                <label style="position:absolute;top:150px;left:600px;width:40px;">R4</label>
+                <input style="position:absolute;top:170px;left:600px;width:60px;" type="number" id="R4"  required>
+                <script>
+                  
+                  var x= Math.floor(Math.random() * (100));
+                  
+                  x=x.toString();
+                  
+                  document.getElementById("R4").value=x;
+                
+              </script>
+                <label style="position:absolute;top:250px;left:300px;width:40px;" >V:</label>
+                <input style="position:absolute;top:270px;left:300px;width:60px;" type="number" id="R5" required> 
+                  <input class="button" style="position:absolute;top:385px;left:725px;" onclick="balanced()" type="submit">
+              </form>
+              </div>
+              <div  style="position:absolute;top:50px;left:100px; height:60px;width:60px;border-color:black;margin: 1px 0;
+              border-width: 2px;
+              border-style: dotted;">
+              
+              </div>  
+              <div  style="position:absolute;top:150px;left:100px; height:60px;width:65px;border-color:rgb(21, 20, 20);margin: 1px 0;
+              border-width: 2px;
+              border-style: dotted;">
+              
+              </div>
+              <div  style="position:absolute;top:50px;left:500px; height:65px;width:65px;border-color:rgb(86, 13, 13);margin: 1px 0;
+              border-width: 2px;
+              border-style: dotted;">
+              
+              </div>
+              <div  style="position:absolute;top:150px;left:500px; height:65px;width:65px;border-color:black;margin: 1px 0;
+              border-width: 2px;
+              border-style: dotted;">
+              
+              </div>
+              <div style="position:absolute;top:100px;left:300px; height:65px;width:65px;border-color:black;margin: 1px 0;
+              border-width: 2px;
+              border-style: dotted;">
+             <p>galvano</p>
+              </div>
+              <div  style="position:absolute;top:300px;left:300px; height:65px;width:65px;border-color:black;margin: 1px 0;
+              border-width: 2px;
+              border-style: dotted;">
+              <p>Battery</p>
+              </div>
+            </div>
+            <div style="align-items: left;">
+              <button class="button" id="check" style="position: relative;left:50px;" >check</button>
+              <button class="button" style="position: relative;left:90px;"onclick="location.reload()">Reset</button>
+              <button class="button" style="position: relative;left:130px;" onclick="window.print();return false"> Print</button>
+              <button class="button" onclick="myCreateFunction()" style="position: relative;left:180px;">Add Row </button>
+              <button class="button"  onclick="myDeleteFunction()"style="position: relative;left:250px;">Delete Row</button>
+            </div> 
+          </div>
+         </div>
+        </div>
+      </div>
+  
+
+          
+          <script>
+            function myCreateFunction(){
+              
+
+var data1 = document.getElementById("R1").value;
+var data2 = document.getElementById("R2").value;
+var data3 = document.getElementById("R3").value;
+var data4 = document.getElementById("R4").value;
+var data5 = document.getElementById("R5").value;
+
+if(data1=="" || data2=="" || data3=="" || data4=="" || data5=="" )
+			{
+				swal("Fill empty values");
+
+				return;}
+
+
+  
+      data1 = parseFloat(data1);
+      data2 = parseFloat(data2);
+      data3 = parseFloat(data3);
+      data4 = parseFloat(data4);
+      data5  = parseFloat(data5);
+
+
+      if(data1<=0 || data2<=0|| data3<=0 || data4<=0)
+			{
+				swal("Invalid Values");
+        for (var i = 1; i <= 5; i++) {
+                
+          document.getElementById("data"+i).value = "";
+
+      }
+
+				return;}
+			// Create a new table row for each input value
+            var row = document.createElement("tr");
+            var cur;
+            if(data1*data4==data3*data2)
+            cur="Balanced";
+            else
+            {
+              // resistance of galvanometer = 100ohm
+              var v= (data5*(data3*data2-data1*data4)) / (data1+data2+data3+data4);
+              var rth= (data1*data3) /(data1+data3) + (data2*data4)  / (data2+data4);
+              var cur=v/(rth+100);    
+              cur=(cur.toFixed(2));
+              cur+="Amp";
+              // cur=curr;
+            }
+
+            for (var i = 1; i <= 5; i++) {
+				// Get the value of the current input field
+				var data = eval("data" + i);
+
+				// Create a new table row element
+
+				// Create a new table data element
+				var cell = document.createElement("td");
+				cell.innerHTML = data;
+
+				// Add the table data to the table row
+				row.appendChild(cell);
+
+				// Add the table row to the table
+				document.getElementById("myTable").appendChild(row);
+			}
+
+
+    var cell = document.createElement("td");
+    cell.innerHTML = cur;
+    row.appendChild(cell);
+    document.getElementById("myTable").appendChild(row);
+
+    for (var i = 1; i <= 5; i++) {
+                
+        document.getElementById("R"+i).value = "";
+
+     }
+
+
+}
+
+function balanced(){
+  
+var data1 = document.getElementById("R1").value;
+var data2 = document.getElementById("R2").value;
+var data3 = document.getElementById("R3").value;
+var data4 = document.getElementById("R4").value;
+var data5 = document.getElementById("R5").value;
+
+if(data1=="" || data2=="" || data3=="" || data4=="" || data5=="" )
+			{
+				swal("Fill empty values");
+
+				return;}
+
+
+  
+      data1 = parseFloat(data1);
+      data2 = parseFloat(data2);
+      data3 = parseFloat(data3);
+      data4 = parseFloat(data4);
+      data5  = parseFloat(data5);
+
+
+      if(data1<=0 || data2<=0|| data3<=0 || data4<=0)
+			{
+				swal("Invalid Values");
+        for (var i = 1; i <= 5; i++) {
+                
+          document.getElementById("data"+i).value = "";
+
+      }
+
+				return;}
+
+            if(data1*data4==data2*data3)
+           swal("Bridge is balanced I_G = 0 ");
+            else
+            {
+              // resistance of galvanometer = 100ohm
+              var v= (data5*(data3*data2-data1*data4)) / (data1+data2+data3+data4);
+              var rth= (data1*data3) /(data1+data3) + (data2*data4)  / (data2+data4);
+              var cur=v/(rth+100);    
+              cur=(cur.toFixed(2));
+              cur+="Amp";
+              swal("Bridge is unbalanced I_G = " ,cur );
+            }
+            
+    /* for (var i = 1; i <= 5; i++) {
+                
+        document.getElementById("R"+i).value = "";
+
+     } */
+
+
+}
+function myDeleteFunction() {
+  document.getElementById("myTable").deleteRow(1);
+}
+          </script>
+
+          <div class="col-md-3" id="instruction" style="position:absolute;top:-15px;left:920px;">
+            <div id="inst" class="col-sm">
+      
+      
+            <button class="button"><a href="javascript:void(0)" onclick="document.getElementById('light').style.display='block';document.getElementById('fade').style.display='block'"><b>Instructions</b></a>
+            </button>
+            <div id="light" class="white_content">Wheatstone Bridge Experiment<br>
+              <ul>&bull;Pick up four resistances, a battery and a galvanometer from the toolbox</ul><br>
+              <ul>&bull;Connect the resistances and the battery as shown in the figure  to form a wheatstone bridge</ul><br>
+              <ul><img src="wheatstone.png" height="200px" width="200px"></ul>
+              <ul>&bull;After making the circuit click on check circuit button to check the connections</ul>
+              <a href="javascript:void(0)" onclick="document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'">Close</a>
+            </div>
+            <div id="fade" class="black_overlay"></div>
+      
+      
+      
+            <button class="button"><a href="javascript:void(0)" onclick="document.getElementById('light1').style.display='block';document.getElementById('fade').style.display='block'"><b>Formulas</b></a>
+            </button>
+            <div id="light1" class="white_content"><b>Wheatstone Bridge Experiment</b><br>
+              <div id="formula">  
+                <h5>Equivalent Resistance:</h5>
+                <b> `frac (1)(R_(eq))=frac(1)(r1+r3) + frac(1)(r2+r4)`<br> `R_(eq) = frac((r1+r3)(r2+r4))(r1+r2+r3+r4)`</b><br>
+                <h5>Cureent Through the battery is: </h5>
+                `I_(Bt) = frac(V*(r1+r2+r3+r4))((r1+r3)(r2+r4))`
+      
+                <h5> If Bridge is Balanced:</h5>
+                <p>Voltage difference between galvanometer terminals: 0 </p>
+                <p> Current through the galvanometer: 0 </p>
+                 
+                <h5>If Bridge is Unbalanced:</h5>
+                   
+                   <p>Using Thevenin's Equivalent across galvanometer terminals:</p>
+                    <p>Voltage difference between galvanometer terminals:<b> `V_("Th") = frac(V*(r3*r2-r1*r4)) (r1+r2+r3+r4)`</b></p>
+                    <b>`R_("Th")= frac(r1*r3) (r1+r3) + frac(r2*r4) (r2+r4)`   </b>
+                    <p> Current through the galvanometer: <sub>  `I_(G) = frac(V_("Th"))(R_(G)+R_("Th"))` </sub> </p>
+                </div>
+      
+      
+              <a href="javascript:void(0)" onclick="document.getElementById('light1').style.display='none';document.getElementById('fade').style.display='none'">Close</a>
+            </div>
+            <div id="fade" class="black_overlay"></div>
+          </div>
+
+  </div>
+
+  <div style="position: absolute;top:90px;left:950px;"><b>Observation Table</b><br>
+    <table id="myTable">
+      <tr>
+          <th>R1</th>
+          <th>R2</th>
+          <th>R3</th>
+          <th>R4</th>
+          <th>Volatge</th>
+          <th>`I_(G)`</th>
+      </tr>
+  </table>
+
+</body>
+</html>
+
+<script> 
+  var count1=1,count2=1,count3=1;   // https://stackoverflow.com/a/2117523
+  instance = jsPlumb.getInstance({});
+  instance.setContainer("diagram");
+  
+  instance.bind("ready", function () {
+    instance.registerConnectionTypes({
+      "red-connection": {
+        paintStyle: {stroke: "red", strokeWidth: 2},
+        hoverPaintStyle: {stroke: "red", strokeWidth: 5},
+        connector: "Flowchart"
+      }
+    });
+
+    // https://stackoverflow.com/a/4502207
+    instance.bind("contextmenu", function (component, event) {
+      if (component.hasClass("jtk-connector")) {
+        event.preventDefault();
+        window.selectedConnection = component;
+        $("<div class='custom-menu'><button class='delete-connection'>Delete connection</button></div>")
+          .appendTo("body")
+          .css({top: event.pageY + "px", left: event.pageX + "px"});
+      }
+    });
+    $("body").on("click", ".delete-connection", function (event) {
+      instance.deleteConnection(window.selectedConnection);
+    });
+
+    $(document).bind("click", function (event) {
+      $("div.custom-menu").remove();
+    });
+
+    $("body").on("contextmenu", "#diagram .control", function (event) {
+      event.preventDefault();
+      window.selectedControl = $(this).attr("id");
+      $("<div class='custom-menu'><button class='delete-control'>Delete control</button></div>")
+        .appendTo("body")
+        .css({top: event.pageY + "px", left: event.pageX + "px"});
+    });
+   
+    $("body").on("click", ".delete-control", function (event) {
+      instance.remove(window.selectedControl);
+    });
+///////////////////// For making them dragable and dropable ///////////////////////
+    $("#toolbox .control").draggable({
+      helper: "clone",
+      containment: "body",
+      appendTo: "#diagram"
+    });
+
+
+    $("#diagram").droppable({
+      drop: function(event, ui) {
+        var id;
+        var clone = $(ui.helper).clone(true);
+        var s=clone.attr("class");
+        if(s[8]=='r')
+         { id= s[8]+count1.toString();
+        count1++;}
+        else if(s[8]=='v')
+         { id= s[8]+count2.toString();
+        count2++;}
+        else if(s[8]=='g')
+         { id= s[8]+count3.toString();
+        count3++;}
+        clone.attr("id", id);
+        clone.appendTo(this);
+        instance.draggable(id, {containment: true});
+              //////////////////////////making double click input ////////////////////
+
+
+        //////////////making endpoints of element//////////////////////////////////
+        if(id[0]=='v'){
+          instance.addEndpoint(id, {
+            endpoint: "Dot",maxConnections:2,
+            anchor: ["Left"],
+            isSource: true,
+            paintStyle:{fill:("red")},
+            connectionType: "red-connection"
+          });
+  
+          instance.addEndpoint(id, {
+            endpoint: "Dot", maxConnections:2,
+            anchor: ["Right"],
+            isTarget: true,
+            connectionType: "black-connection"
+          });
+
+        }
+        else
+        {instance.addEndpoint(id, {
+          endpoint: "Dot",maxConnections:2,
+          anchor: ["Right"],
+          isSource: true,
+          paintStyle:{fill:("red")},
+          connectionType: "red-connection"
+        });
+
+        instance.addEndpoint(id, {
+          endpoint: "Dot", maxConnections:2,
+          anchor: ["Left"],
+          isTarget: true,
+          connectionType: "blue-connection"
+        });}
+      }
+    })
+
+  });
+  ////////////////////////// check button ////////////////////////////////
+  document.getElementById("check").onclick = check_circuit;
+ 
+  function check_circuit() {
+    var allConnections = instance.getConnections({
+      //scope: "someScope"
+  });
+  const Tid=[];const Sid=[];
+  //alert(allConnections.length);
+  for (var i = 0; i < allConnections.length; i++) {
+      var target = allConnections[i].targetId;
+      var source = allConnections[i].sourceId;
+      Tid[i]=target;
+      Sid[i]=source;
+  }
+  const set1=new Set();
+  for(var i=0;i<Tid.length;i++){
+       set1.add(Tid[i]);
+  }
+  const arr=[...set1].sort();
+  const set_1=new Set(arr);
+  const set2=new Set();
+  for(var i=0;i<Sid.length;i++){
+       set2.add(Sid[i]);
+  }
+  const arr1=[...set2].sort();const arr_r=[];
+  var c_r=0,c_v=0,c_g=0,s_v,j=0;
+  for(var i=0;i<arr1.length;i++){
+    if(arr1[i][0]=='r')
+     {c_r++;arr_r[j]=arr1[i];j++;}
+    else if(arr1[i][0]=='v')
+     {c_v++;s_v=arr1[i];}
+    else
+     c_g++;
+  }
+  const set_2=new Set(arr1);
+  console.log(arr_r);
+  if(Tid.length!=8 || Sid.length!=8 || !setsAreEqual(set_1,set_2) || c_r!=4 || c_v!=1 || c_g!=1){
+    swal("Wrong Connections");
+    
+  }
+  else{
+    var amp={};
+    for(var i=0;i<Sid.length;i++){
+      amp[Sid[i]]=amp[Sid[i]] || [];
+      amp[Sid[i]].push(Tid[i]);
+    }
+    for(var i=0;i<Tid.length;i++){
+      amp[Tid[i]]=amp[Tid[i]] || [];
+      amp[Tid[i]].push(Sid[i]);
+    }
+    console.log(amp);
+    const s_element=new Set();
+    var s=amp[arr[0]][0];
+    s_element.add(s);
+    const r_pos=[];
+    if(s[0]!='r' ||amp[s].length!=3 || amp[s][0]!=arr[5] ){
+      swal("Wrong Connection");
+    }
+    else{
+
+      var r_top=document.querySelector('#'+s + '').getBoundingClientRect().top +50;
+      var r_left=document.querySelector('#'+s + '').getBoundingClientRect().left -170;
+      r_pos[3]=[r_top,r_left];
+
+      r_top=document.querySelector('#'+amp[arr[0]][1] + '').getBoundingClientRect().top +50;
+      r_left=document.querySelector('#'+amp[arr[0]][1]+ '').getBoundingClientRect().left -170;
+      r_pos[0]=[r_top,r_left];
+
+
+
+
+      if(amp[s][2]!=arr[0])
+      s=amp[s][2];
+      else
+       s=amp[s][1];
+      
+      if(s_element.has(s) || s[0]!='r' || amp[s].length!=2 || amp[s][1]!=arr[5])
+      swal("Wrong Connection");
+      else{
+
+      r_top=document.querySelector('#'+s + '').getBoundingClientRect().top +50;
+      r_left=document.querySelector('#'+s + '').getBoundingClientRect().left -170;
+      r_pos[1]=[r_top,r_left];
+
+        s_element.add(s);
+        s=amp[arr[0]][1];
+        if(s[0]!='r' || s_element.has(s)  || amp[s].length!=3 || amp[s][2]!=arr[5])
+        swal("Wrong Connection");
+        else{
+          s_element.add(s);
+          if(amp[s][0]!=arr[0])
+           s=amp[s][0];
+          else
+           s=amp[s][1];
+          if(s[0]!='r' || s_element.has(s) || amp[s].length!=2 || amp[s][0]!=arr[5])
+          swal("Wrong Connection");
+          else{
+
+            r_top=document.querySelector('#'+s + '').getBoundingClientRect().top +50;
+            r_left=document.querySelector('#'+s + '').getBoundingClientRect().left -170;
+            r_pos[2]=[r_top,r_left];
+
+
+            swal("Right Connections...Go Ahead!!");
+           // var v_top=document.querySelector('#'+s_v + '').getBoundingClientRect().top + 50;
+            //var v_left=document.querySelector('#'+s_v + '').getBoundingClientRect().left - 170;
+
+            $("<div id='abcd' style = 'position: absolute;top:"+v_top +"px ; left:"+ v_left+"px ;'><b>V</b></div>")
+            .appendTo("#diagram");
+            
+            for(var i=0;i<4;i++){
+              $("<div id='r1_tag' style = 'position: absolute;top:"+r_pos[i][0] +"px ; left:"+ r_pos[i][1]+"px ;'><b>R"+(i+1)+"</b></div>")
+            .appendTo("#diagram");
+            }
+            
+              mydiv.style.display="block";
+
+              var div1 = document.getElementById("diagram");
+              var div2 = document.getElementById("toolbox");
+              
+              div1.classList.add("no-pointer-events");
+              div2.classList.add("no-pointer-events");
+
+
+            
+
+
+
+          }
+        }
+      }
+      console.log(s_element);
+
+
+
+
+
+
+    }
+
+
+
+
+  }
+
+  
+}
+function setsAreEqual(a, b) {
+if (a.size !== b.size) {
+  return false;
+}
+
+return Array.from(a).every(element => {
+  return b.has(element);
+});
+}
+</script>
